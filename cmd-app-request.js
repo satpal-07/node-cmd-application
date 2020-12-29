@@ -2,7 +2,8 @@ const yargs = require('yargs');
 const request = require('request-promise');
 const fs = require('fs');
 const path = require('path');
-const inquirer = require('inquirer');
+const { stringifyObject, generateFileName, prompMessage } = require('./utils');
+
 
 async function startApp() {
   try {
@@ -45,7 +46,7 @@ async function startApp() {
       options.contentType
     );
     console.log(result);
-    await aveFile(result, options['file-name']);
+    await saveFile(result, options['file-name']);
   } catch (error) {
     console.error('Error in the application: ' + error.message);
   }
@@ -115,34 +116,8 @@ async function saveFile(content, fileName = generateFileName()) {
   }
 }
 
-function stringifyObject(param) {
-  try {
-    if (typeof param === 'object') {
-      return JSON.stringify(param);
-    }
-  } catch (error) {
-    console.log(`Error in parsing obj to string: ${error.message}`);
-  }
-  return param;
-}
-
-function generateFileName() {
-  return new Date().getTime() + '.txt';
-}
-
-async function prompMessage(message, name, type = 'input') {
-  const response = await inquirer.prompt({
-    name,
-    type,
-    message,
-  });
-  return response;
-}
-
 module.exports = {
   startApp,
-  prompMessage,
-  stringifyObject,
   saveFile,
   makeRequest,
 };
