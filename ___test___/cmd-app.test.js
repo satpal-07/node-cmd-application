@@ -21,6 +21,9 @@ describe('checking save file function', () => {
     if (fs.existsSync(combinedFileName)) fs.unlinkSync(combinedFileName);
     if (fs.existsSync(secondCombinedFileName))
       fs.unlinkSync(secondCombinedFileName);
+    jest.spyOn(console, 'log').mockImplementation(jest.fn());
+    jest.spyOn(console, 'debug').mockImplementation(jest.fn());
+    jest.spyOn(console, 'error').mockImplementation(jest.fn());
   });
 
   afterAll(() => {
@@ -54,6 +57,11 @@ describe('checking save file function', () => {
 });
 
 describe('checking for functions written in cmd-app', () => {
+  beforeAll(() => {
+    jest.spyOn(console, 'log').mockImplementation(jest.fn());
+    jest.spyOn(console, 'debug').mockImplementation(jest.fn());
+    jest.spyOn(console, 'error').mockImplementation(jest.fn());
+  });
   afterEach(() => {
     // to reset the request after each test
     axios.mockReset();
@@ -76,6 +84,11 @@ describe('checking for functions written in cmd-app', () => {
 });
 
 describe('Testing error thrown in the save file function', () => {
+  beforeAll(() => {
+    jest.spyOn(console, 'log').mockImplementation(jest.fn());
+    jest.spyOn(console, 'debug').mockImplementation(jest.fn());
+    jest.spyOn(console, 'error').mockImplementation(jest.fn());
+  });
   test('Should throw an error', async () => {
     fs.existsSync = jest.fn().mockImplementationOnce(() => {
       throw new Error('test error');

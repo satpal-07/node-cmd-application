@@ -1,7 +1,11 @@
 const utils = require('../utils');
 
 describe('Testing for functions written in Utils', () => {
-
+  beforeAll(() => {
+    jest.spyOn(console, 'log').mockImplementation(jest.fn());
+    jest.spyOn(console, 'debug').mockImplementation(jest.fn());
+    jest.spyOn(console, 'error').mockImplementation(jest.fn());
+  });
   test('Should generate fila name using date now', async () => {
     const mockDate = new Date(1466424490000);
     const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDate);
