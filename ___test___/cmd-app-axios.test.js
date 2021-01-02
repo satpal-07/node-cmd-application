@@ -43,14 +43,15 @@ describe('checking save file function', () => {
     expect(readFile).toBe(JSON.stringify(testData));
   });
 
-  test('Should save the file with provided content', async () => {
-    process.nextTick(() => {
+  test('Should save the file after asking new file name with provided content', async () => {
+    let interval = setInterval(() => {
       stdin.send(`${secondTestFileName}\r`);
-    });
+    }, 0);
     await cmdApp.saveFile(testData, testFileName);
     const readFile = fs.readFileSync(secondCombinedFileName, {
       encoding: 'utf8',
     });
+    clearInterval(interval);
     expect(fs.existsSync(secondCombinedFileName)).toBe(true);
     expect(readFile).toBe(JSON.stringify(testData));
   });
@@ -90,7 +91,7 @@ describe('Testing error thrown in the save file function', () => {
     jest.spyOn(console, 'error').mockImplementation(jest.fn());
   });
   test('Should throw an error', async () => {
-    fs.existsSync = jest.fn().mockImplementationOnce(() => {
+    fs.promises.access = jest.fn().mockImplementationOnce(() => {
       throw new Error('test error');
     });
     try {

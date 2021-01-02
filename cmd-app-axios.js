@@ -1,6 +1,6 @@
 const yargs = require('yargs');
 const axios = require('axios');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const { stringifyObject, generateFileName, prompMessage } = require('./utils');
 
@@ -50,8 +50,6 @@ async function startApp() {
   }
 }
 
-
-
 async function makeRequest(
   uri,
   method,
@@ -81,7 +79,7 @@ async function makeRequest(
 async function saveFile(content, fileName = generateFileName()) {
   try {
     fileName = path.join(__dirname, fileName);
-    if (fs.existsSync(fileName)) {
+    if (await checkFileExists(fileName)) {
       console.log('File name already exists...');
       let prompt = await prompMessage(
         'File name provided exists. Please provide new file name',
@@ -89,7 +87,7 @@ async function saveFile(content, fileName = generateFileName()) {
       );
 
       fileName = path.join(__dirname, prompt.fileName);
-      while (fs.existsSync(fileName)) {
+      while (await checkFileExists(fileName)) {
         prompt = await prompMessage(
           'File name provided exists. Please provide new file name',
           'fileName'
@@ -97,14 +95,19 @@ async function saveFile(content, fileName = generateFileName()) {
         fileName = path.join(__dirname, prompt.fileName);
       }
     }
-    fs.writeFileSync(fileName, stringifyObject(content));
+    await fs.writeFile(fileName, stringifyObject(content));
   } catch (err) {
     console.error(`Error in saving file: ${err.message}`);
     throw new Error('Error in saving file');
   }
 }
 
-
+async function checkFileExists(file) {
+  return fs
+    .access(file)
+    .then(() => true)
+    .catch(() => false);
+}
 
 module.exports = {
   startApp,

@@ -13,6 +13,16 @@
       ],
       "program": "${workspaceFolder}/index.js",
       "args": ["-u", "https://run.mocky.io/v3/14f32096-ea5c-48f7-be10-72d63ede55e7", "-m", "POST", "-f", "hello.txt"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest Tests",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceRoot}/node_modules/jest/bin/jest.js",
+      "args": ["--runInBand", "--config=${workspaceRoot}/jest.config.js"],
     }
   ]
 }
