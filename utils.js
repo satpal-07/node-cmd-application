@@ -1,4 +1,5 @@
 const inquirer = require('inquirer');
+const fs = require('fs').promises;
 
 
 function parseToJson(param) {
@@ -35,9 +36,17 @@ async function prompMessage(message, name, type = 'input') {
   return response;
 }
 
+async function checkFileExists(file) {
+  return fs
+    .access(file)
+    .then(() => true)
+    .catch(() => false);
+}
+
 module.exports = {
   prompMessage,
   stringifyObject,
   parseToJson,
-  generateFileName
+  generateFileName,
+  checkFileExists
 };

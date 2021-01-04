@@ -1,67 +1,7 @@
-const yargs = require('yargs');
 const axios = require('axios');
 const fs = require('fs').promises;
 const path = require('path');
-const { stringifyObject, generateFileName, prompMessage } = require('./utils');
-const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
-
-async function startApp() {
-  try {
-    const options = yargs
-      .option('u', {
-        alias: 'uri',
-        describe: 'API URL to be called',
-        type: 'string',
-        demandOption: true,
-      })
-      .option('m', {
-        alias: 'method',
-        describe: 'method type',
-        type: 'string',
-        demandOption: true,
-      })
-      .option('b', {
-        alias: 'body',
-        describe: 'body',
-        type: 'string',
-        demandOption: false,
-      })
-      .option('c', {
-        alias: 'contentType',
-        describe: 'content type',
-        type: 'string',
-        demandOption: false,
-      })
-      .option('f', {
-        alias: 'file-name',
-        describe: 'file name of where the result will be saved',
-        type: 'string',
-        demandOption: false,
-      })
-      .option('t', {
-        alias: 'times',
-        describe: 'times of api will be called',
-        type: 'number',
-        default: 1,
-        demandOption: false,
-      }).argv;
-
-    let result = [];
-    for (let i = 0; i < options['times']; i++) {
-      result.push(
-        stringifyObject(await makeRequest(
-          options.uri,
-          options.method,
-          options.body,
-          options.contentType
-        ))
-      );
-    }
-    await saveFile(result.join('\n'), options['file-name']);
-  } catch (error) {
-    console.error('Error in the application: ' + error.message);
-  }
-}
+const { generateFileName, prompMessage, checkFileExists } = require('./utils');
 
 async function makeRequest(
   uri,
@@ -85,7 +25,7 @@ async function makeRequest(
     return result.data;
   } catch (error) {
     console.log(`Error in making api call: ${error.message}`);
-    throw new Error('Error in calling API');
+    throw new Error(`Error in calling API: ${error.message}`);
   }
 }
 
@@ -111,19 +51,13 @@ async function saveFile(content, fileName = generateFileName()) {
     await fs.writeFile(fileName, content);
   } catch (err) {
     console.error(`Error in saving file: ${err.message}`);
-    throw new Error('Error in saving file');
+    throw new Error(`Error in saving file: ${err.message}`);
   }
 }
 
-async function checkFileExists(file) {
-  return fs
-    .access(file)
-    .then(() => true)
-    .catch(() => false);
-}
+
 
 module.exports = {
-  startApp,
   saveFile,
   makeRequest,
 };

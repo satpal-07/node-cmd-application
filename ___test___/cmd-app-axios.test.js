@@ -71,11 +71,11 @@ describe('checking for functions written in cmd-app', () => {
   });
 
   test('Should return error', async () => {
-    axios.mockImplementationOnce(() => Promise.reject('Not Allowed'));
+    axios.mockImplementationOnce(() => Promise.reject({message:'Not Allowed'}));
     try {
       await cmdApp.makeRequest('/randomurl', 'get');
     } catch (error) {
-      expect(error.message).toEqual('Error in calling API');
+      expect(error.message).toEqual('Error in calling API: Not Allowed');
     }
   });
 });
@@ -93,7 +93,7 @@ describe('Testing error thrown in the save file function', () => {
     try {
       await cmdApp.saveFile(testData);
     } catch (error) {
-      expect(error.message).toBe('Error in saving file');
+      expect(error.message).toBe('Error in saving file: test error');
     }
   });
 });
