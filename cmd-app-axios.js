@@ -3,6 +3,7 @@ const axios = require('axios');
 const fs = require('fs').promises;
 const path = require('path');
 const { stringifyObject, generateFileName, prompMessage } = require('./utils');
+const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
 
 async function startApp() {
   try {
@@ -36,15 +37,27 @@ async function startApp() {
         describe: 'file name of where the result will be saved',
         type: 'string',
         demandOption: false,
+      })
+      .option('t', {
+        alias: 'times',
+        describe: 'times of api will be called',
+        type: 'number',
+        default: 1,
+        demandOption: false,
       }).argv;
 
-    let result = await makeRequest(
-      options.uri,
-      options.method,
-      options.body,
-      options.contentType
-    );
-    await saveFile(result, options['file-name']);
+    let result = [];
+    for (let i = 0; i < options['times']; i++) {
+      result.push(
+        stringifyObject(await makeRequest(
+          options.uri,
+          options.method,
+          options.body,
+          options.contentType
+        ))
+      );
+    }
+    await saveFile(result.join('\n'), options['file-name']);
   } catch (error) {
     console.error('Error in the application: ' + error.message);
   }
@@ -95,7 +108,7 @@ async function saveFile(content, fileName = generateFileName()) {
         fileName = path.join(__dirname, prompt.fileName);
       }
     }
-    await fs.writeFile(fileName, stringifyObject(content));
+    await fs.writeFile(fileName, content);
   } catch (err) {
     console.error(`Error in saving file: ${err.message}`);
     throw new Error('Error in saving file');

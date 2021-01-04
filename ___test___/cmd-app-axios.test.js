@@ -5,11 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const cmdApp = require('../cmd-app-axios');
 const testFileName = 'test.txt';
-const testData = {
-  data: {
-    response: 'Test data',
-  },
-};
+const testData = '{"data":{"response": "Test data"}}';
 const secondTestFileName = 'test-second.txt';
 let stdin;
 const combinedFileName = path.join(__dirname, '../' + testFileName);
@@ -40,7 +36,7 @@ describe('checking save file function', () => {
     await cmdApp.saveFile(testData, testFileName);
     const readFile = fs.readFileSync(combinedFileName, { encoding: 'utf8' });
     expect(fs.existsSync(combinedFileName)).toBe(true);
-    expect(readFile).toBe(JSON.stringify(testData));
+    expect(readFile).toBe(testData);
   });
 
   test('Should save the file after asking new file name with provided content', async () => {
@@ -53,7 +49,7 @@ describe('checking save file function', () => {
     });
     clearInterval(interval);
     expect(fs.existsSync(secondCombinedFileName)).toBe(true);
-    expect(readFile).toBe(JSON.stringify(testData));
+    expect(readFile).toBe(testData);
   });
 });
 
