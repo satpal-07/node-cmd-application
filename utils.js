@@ -1,7 +1,6 @@
 const inquirer = require('inquirer');
 const fs = require('fs').promises;
 
-
 function parseToJson(param) {
   try {
     param = JSON.parse(param);
@@ -10,7 +9,6 @@ function parseToJson(param) {
   }
   return param;
 }
-
 
 function stringifyObject(param) {
   try {
@@ -27,7 +25,7 @@ function generateFileName() {
   return new Date().getTime() + '.txt';
 }
 
-async function prompMessage(message, name, type = 'input') {
+async function prompMessage(message, name, type) {
   const response = await inquirer.prompt({
     name,
     type,
@@ -48,5 +46,5 @@ module.exports = {
   stringifyObject,
   parseToJson,
   generateFileName,
-  checkFileExists
+  checkFileExists,
 };

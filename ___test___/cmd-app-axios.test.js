@@ -6,17 +6,13 @@ const path = require('path');
 const cmdApp = require('../cmd-app-axios');
 const testFileName = 'test.txt';
 const testData = '{"data":{"response": "Test data"}}';
-const secondTestFileName = 'test-second.txt';
-let stdin;
 const combinedFileName = path.join(__dirname, '../' + testFileName);
-const secondCombinedFileName = path.join(__dirname, '../' + secondTestFileName);
 const axios = require('axios');
+let stdin;
 
 describe('checking save file function', () => {
   beforeAll(() => {
     if (fs.existsSync(combinedFileName)) fs.unlinkSync(combinedFileName);
-    if (fs.existsSync(secondCombinedFileName))
-      fs.unlinkSync(secondCombinedFileName);
     jest.spyOn(console, 'log').mockImplementation(jest.fn());
     jest.spyOn(console, 'debug').mockImplementation(jest.fn());
     jest.spyOn(console, 'error').mockImplementation(jest.fn());
@@ -24,8 +20,6 @@ describe('checking save file function', () => {
 
   afterAll(() => {
     if (fs.existsSync(combinedFileName)) fs.unlinkSync(combinedFileName);
-    if (fs.existsSync(secondCombinedFileName))
-      fs.unlinkSync(secondCombinedFileName);
   });
 
   beforeEach(() => {
@@ -36,20 +30,34 @@ describe('checking save file function', () => {
     await cmdApp.saveFile(testData, testFileName);
     const readFile = fs.readFileSync(combinedFileName, { encoding: 'utf8' });
     expect(fs.existsSync(combinedFileName)).toBe(true);
-    expect(readFile).toBe(testData);
+    expect(readFile).toBe(`${testData}\n`);
   });
 
-  test('Should save the file after asking new file name with provided content', async () => {
-    let interval = setInterval(() => {
-      stdin.send(`${secondTestFileName}\r`);
-    }, 0);
+  test('Should append the file with data after confirming', async () => {
     await cmdApp.saveFile(testData, testFileName);
-    const readFile = fs.readFileSync(secondCombinedFileName, {
+    const readFile = fs.readFileSync(combinedFileName, {
       encoding: 'utf8',
     });
+    expect(fs.existsSync(combinedFileName)).toBe(true);
+    expect(readFile).toBe(`${testData}\n${testData}\n`);
+  });
+
+  test('Should return the new file name when file is found and user types "n"', async () => {
+    let interval = setInterval(() => {
+      stdin.send(`n\r`);
+    }, 0);
+    const returnedFileName = await cmdApp.fileNameCheck(combinedFileName);
     clearInterval(interval);
-    expect(fs.existsSync(secondCombinedFileName)).toBe(true);
-    expect(readFile).toBe(testData);
+    expect(returnedFileName).not.toBe(combinedFileName);
+  });
+
+  test('Should return the same file name when file is found and user types "y"', async () => {
+    let interval = setInterval(() => {
+      stdin.send(`y\r`);
+    }, 0);
+    const returnedFileName = await cmdApp.fileNameCheck(combinedFileName);
+    clearInterval(interval);
+    expect(returnedFileName).toBe(combinedFileName);
   });
 });
 
@@ -71,7 +79,9 @@ describe('checking for functions written in cmd-app', () => {
   });
 
   test('Should return error', async () => {
-    axios.mockImplementationOnce(() => Promise.reject({message:'Not Allowed'}));
+    axios.mockImplementationOnce(() =>
+      Promise.reject({ message: 'Not Allowed' })
+    );
     try {
       await cmdApp.makeRequest('/randomurl', 'get');
     } catch (error) {
@@ -87,7 +97,7 @@ describe('Testing error thrown in the save file function', () => {
     jest.spyOn(console, 'error').mockImplementation(jest.fn());
   });
   test('Should throw an error', async () => {
-    fs.promises.access = jest.fn().mockImplementationOnce(() => {
+    fs.promises.appendFile = jest.fn().mockImplementationOnce(() => {
       throw new Error('test error');
     });
     try {

@@ -6,6 +6,8 @@ describe('Testing for functions written in Utils', () => {
     jest.spyOn(console, 'debug').mockImplementation(jest.fn());
     jest.spyOn(console, 'error').mockImplementation(jest.fn());
   });
+
+
   test('Should generate fila name using date now', async () => {
     const mockDate = new Date(1466424490000);
     const spy = jest.spyOn(global, 'Date').mockImplementation(() => mockDate);
@@ -33,4 +35,14 @@ describe('Testing for functions written in Utils', () => {
     const parsedData = utils.stringifyObject({});
     expect(parsedData).toEqual({});
   });
+
+
+  test('Should return false when no file is found', async () => {
+    
+    const fileName = 'text.txt';
+    const isFileFound = await utils.checkFileExists(fileName);
+    
+    expect(isFileFound).toEqual(false);
+  });
+  
 });

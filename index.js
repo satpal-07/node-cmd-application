@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const yargs = require('yargs');
-const { saveFile, makeRequest } = require('./cmd-app-axios');
+const { saveFile, makeRequest, fileNameCheck } = require('./cmd-app-axios');
 const { stringifyObject } = require('./utils');
 // const cmdApp = require('./cmd-app-request');
 
@@ -45,20 +45,18 @@ const { stringifyObject } = require('./utils');
         demandOption: false,
       }).argv;
 
-    let result = [];
+    let fileName = await fileNameCheck(options['file-name']);
     for (let i = 0; i < options['times']; i++) {
-      result.push(
-        stringifyObject(
-          await makeRequest(
-            options.uri,
-            options.method,
-            options.body,
-            options.contentType
-          )
+      let result = stringifyObject(
+        await makeRequest(
+          options.uri,
+          options.method,
+          options.body,
+          options.contentType
         )
       );
+      await saveFile(result, fileName);
     }
-    await saveFile(result.join('\n'), options['file-name']);
   } catch (error) {
     console.error('Error in the application: ' + error.message);
   }

@@ -21,7 +21,7 @@ async function makeRequest(
       },
     };
     let result = await axios(requestOptions);
-    console.log(result.status);
+    console.log(`API call returned following status code: ${result.status}`);
     return result.data;
   } catch (error) {
     console.log(`Error in making api call: ${error.message}`);
@@ -29,35 +29,34 @@ async function makeRequest(
   }
 }
 
+async function fileNameCheck(fileName) {
+  if (await checkFileExists(fileName)) {
+    let prompt = await prompMessage(
+      'File name provided exists. Do you like to add the content to existing file?',
+      'append',
+      'confirm'
+    );
+    if (!prompt.append) {
+      fileName = generateFileName();
+    }
+    console.log(`File will be saved as ${fileName}`);
+  }
+  return fileName;
+}
+
 async function saveFile(content, fileName = generateFileName()) {
   try {
     fileName = path.join(__dirname, fileName);
-    if (await checkFileExists(fileName)) {
-      console.log('File name already exists...');
-      let prompt = await prompMessage(
-        'File name provided exists. Please provide new file name',
-        'fileName'
-      );
-
-      fileName = path.join(__dirname, prompt.fileName);
-      while (await checkFileExists(fileName)) {
-        prompt = await prompMessage(
-          'File name provided exists. Please provide new file name',
-          'fileName'
-        );
-        fileName = path.join(__dirname, prompt.fileName);
-      }
-    }
-    await fs.writeFile(fileName, content);
+    await fs.appendFile(fileName, `${content}\n`);
+    console.log(`File saved!`);
   } catch (err) {
     console.error(`Error in saving file: ${err.message}`);
     throw new Error(`Error in saving file: ${err.message}`);
   }
 }
 
-
-
 module.exports = {
   saveFile,
   makeRequest,
+  fileNameCheck,
 };
