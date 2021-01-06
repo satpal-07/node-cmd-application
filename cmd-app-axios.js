@@ -12,10 +12,10 @@ async function makeRequest(
   try {
     let requestOptions = {
       method: method,
-      url: uri,
-      data: {
+      url: encodeURI(uri),
+      data: body ? {
         body: body,
-      },
+      } : undefined,
       headers: {
         'Content-Type': contentType,
       },

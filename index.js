@@ -6,7 +6,7 @@ const { stringifyObject } = require('./utils');
 
 (async () => {
   try {
-    const options = yargs
+      const options = yargs
       .option('u', {
         alias: 'uri',
         describe: 'API URL to be called',
