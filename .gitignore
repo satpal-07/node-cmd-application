@@ -1,35 +1,3 @@
-Skip to content
-Why GitHub? 
-Team
-Enterprise
-Explore 
-Marketplace
-Pricing 
-Search
-
-Sign in
-Sign up
-github
-/
-gitignore
-3.2k112k60.6k
-Code
-Pull requests
-245
-Actions
-Projects
-Security
-Insights
-gitignore/Node.gitignore
-@ch4ot1c
-ch4ot1c Add .yarn/install-state.gz to Node.gitignore (#3407)
-…
-Latest commit 7293c14 on 14 May
- History
- 58 contributors
-@stuartpb@shiftkey@SimonSiefke@TennyZhuang@venatoria@ro31337@Richienb@melonmanchan@gouthamve@jucrouzet@cheddar@arcresu
-116 lines (86 sloc)  1.77 KB
-  
 # Logs
 logs
 *.log
@@ -158,3 +126,7 @@ API
 Training
 Blog
 About
+
+# text files
+*.txt
+

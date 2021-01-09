@@ -1,7 +1,7 @@
 const axios = require('axios');
 const fs = require('fs').promises;
 const path = require('path');
-const { generateFileName, prompMessage, checkFileExists } = require('./utils');
+const { generateFileName, prompMessage, checkFileExists, stringifyObject } = require('./utils');
 
 async function makeRequest(
   uri,
@@ -22,7 +22,7 @@ async function makeRequest(
     };
     let result = await axios(requestOptions);
     console.log(`API call returned following status code: ${result.status}`);
-    return result.data;
+    return stringifyObject(result.data);
   } catch (error) {
     console.log(`Error in making api call: ${error.message}`);
     throw new Error(`Error in calling API: ${error.message}`);

@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 const yargs = require('yargs');
 const { saveFile, makeRequest, fileNameCheck } = require('./cmd-app-axios');
-const { stringifyObject } = require('./utils');
 // const cmdApp = require('./cmd-app-request');
 
 (async () => {
   try {
-      const options = yargs
+    const options = yargs
       .option('u', {
         alias: 'uri',
         describe: 'API URL to be called',
@@ -47,13 +46,11 @@ const { stringifyObject } = require('./utils');
 
     let fileName = await fileNameCheck(options['file-name']);
     for (let i = 0; i < options['times']; i++) {
-      let result = stringifyObject(
-        await makeRequest(
-          options.uri,
-          options.method,
-          options.body,
-          options.contentType
-        )
+      let result = await makeRequest(
+        options.uri,
+        options.method,
+        options.body,
+        options.contentType
       );
       await saveFile(result, fileName);
     }
